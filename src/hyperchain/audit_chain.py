@@ -111,6 +111,9 @@ class AuditChain:
         if self._storage is None:
             raise ValueError("No storage path configured")
         path = self._storage / "chain.json"
+        if not path.exists():
+            self._entries = []
+            return
         self._entries = json.loads(path.read_text(encoding="utf-8"))
 
     # ------------------------------------------------------------------
