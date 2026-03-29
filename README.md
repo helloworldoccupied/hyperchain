@@ -214,46 +214,56 @@ HyperChain is **model-agnostic**. Use any combination:
 
 ## Born from Production
 
-<table>
-<tr><td>
-
-**The Numbers**
-
-| Metric | Value |
-|--------|-------|
-| Duration | 12 weeks of continuous operation |
-| AI models deployed | 11 frontier models from 8 providers |
-| Models terminated | 7 (for incompetence, bias, or insubordination) |
-| Architectural iterations | 2,000+ (measured by git commits + config changes) |
-| Governance rebuilds | 3 complete rewrites from scratch |
-| AI-to-AI interactions | 1,000,000+ |
-| GPU servers governed | 2,400+ across 8 datacenters |
-| Post-mortem analyses | 300+ |
-| Production incidents caught | 200+ (before reaching customers) |
-| Anti-patterns encoded | 7 (each one a real catastrophe) |
-| Lines of governance code | 15,000+ |
-| Cost of learning these lessons | You don't want to know |
-
-</td><td>
-
-**The Domains**
-
-📊 **Financial Intelligence**
-Daily CIO-level reports for crypto and equity markets. 4 independent AI analysts + bull-bear debate + Grok real-time social sentiment. Automated portal publishing to 认证门户.
-
-💻 **GPU Computing Platform**
-2,400 servers across 8 datacenters. NVIDIA H100 to domestic 昇腾 910C. CoreWeave-grade management console. Governed deployment pipeline.
-
-🏛️ **Corporate Governance**
-AI board of directors with multi-model voting. ECC audit chains for every decision. Compliance reporting for regulated industries.
-
-🤖 **Quantitative Trading**
-6-strategy engine with 4-agent AI committee. Risk management with circuit breakers. Position sizing with regime detection.
-
-</td></tr>
-</table>
-
 > *"We didn't set out to build a governance framework. We set out to replace an entire company with AI. The governance framework is what we built to survive what happened next."*
+
+### By the Numbers
+
+```
+12 weeks          of continuous multi-AI operation
+11 models         deployed from 8 different providers
+ 7 models         terminated for incompetence, bias, or insubordination
+ 2,000+           architectural iterations
+ 3                governance systems built, burned, and rebuilt
+ 1,000,000+       AI-to-AI interactions processed
+ 2,400+           GPU servers governed across 8 datacenters
+ 300+             post-mortem analyses conducted
+ 200+             production incidents caught before reaching customers
+ 7                anti-patterns encoded — each one a real catastrophe
+ 15,000+          lines of governance code extracted
+```
+
+### Where It Ran
+
+🔬 **Financial Intelligence** — Daily CIO-level reports covering crypto and equity markets. 4 independent AI analysts running parallel analysis, bull-bear structured debate, Grok harvesting real-time social sentiment from X/Twitter, automated publishing to authenticated intelligence portals. Served a chairman who trades both stocks and futures.
+
+💻 **GPU Infrastructure** — 2,400+ servers spanning NVIDIA B300 to domestic 昇腾 910C, distributed across 8 datacenters in 5 cities. CoreWeave-grade management console. Every deployment governed by the pipeline that would become HyperChain.
+
+🏛️ **Corporate Governance** — An AI board of directors where models from competing companies (Anthropic, OpenAI, Google, xAI) voted on business strategy. Multi-model consensus protocols. ECC audit chains for every resolution. The most adversarial test environment imaginable for a governance framework.
+
+📈 **Quantitative Trading** — 6-strategy algorithmic engine with a 4-agent AI investment committee. Circuit breakers, regime detection, position sizing — all governed by the same state machine and audit chain that now powers HyperChain.
+
+### Runtime Environment
+
+HyperChain runs anywhere Python runs — but it was designed for the **AI-native development stack**:
+
+```
+┌─────────────────────────────────────────────┐
+│  Your AI Coding Tool                        │
+│  (Claude Code / Cursor / Windsurf / Copilot)│
+│                                             │
+│  ┌───────────────────────────────────────┐  │
+│  │  HyperChain (pip install hyperchain)  │  │
+│  │  • Guards run as tool-use hooks       │  │
+│  │  • Audit chain persists to disk/DB    │  │
+│  │  • State machine governs workflows    │  │
+│  └───────────────────────────────────────┘  │
+│                                             │
+│  AI agents execute inside this sandbox.     │
+│  XiaotianQuan enforces rules from outside.  │
+└─────────────────────────────────────────────┘
+```
+
+**Also runs in:** CI/CD pipelines (GitHub Actions, GitLab CI), Docker containers, Kubernetes, bare metal servers, or any environment where you need governed AI collaboration.
 
 ---
 
