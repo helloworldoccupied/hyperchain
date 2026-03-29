@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/🔗-HyperChain-000000?style=for-the-badge&labelColor=000000" alt="HyperChain" height="40"/>
+  <img src="assets/logo.jpg" alt="HyperChain — Beyond Limit" width="280"/>
 </p>
 
-<h1 align="center">HyperChain</h1>
+<h1 align="center">HyperChain 国兴超链</h1>
 
 <p align="center">
   <strong>The governance layer your multi-AI system is missing.</strong>
