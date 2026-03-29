@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HyperChain Dashboard</title>
+<style>
+  :root {
+    --bg-base: #08090d;
+    --bg-surface: #0d0f14;
+    --bg-elevated: #12141b;
+    --bg-hover: #181b24;
+    --border-subtle: #1a1d27;
+    --border-default: #232733;
+    --border-bright: #2d3244;
+    --text-primary: #e8eaed;
+    --text-secondary: #8b8fa3;
+    --text-tertiary: #565a6e;
+    --accent-blue: #3b82f6;
+    --accent-blue-dim: #1d4ed8;
+    --accent-blue-glow: rgba(59, 130, 246, 0.15);
+    --accent-blue-bright: #60a5fa;
+    --accent-green: #22c55e;
+    --accent-green-dim: rgba(34, 197, 94, 0.12);
+    --accent-red: #ef4444;
+    --accent-red-dim: rgba(239, 68, 68, 0.12);
+    --accent-amber: #f59e0b;
+    --accent-amber-dim: rgba(245, 158, 11, 0.1);
+    --accent-purple: #a78bfa;
+    --font-sans: -apple-system, "SF Pro Display", "SF Pro", "PingFang SC", "Helvetica Neue", sans-serif;
+    --font-mono: "SF Mono", "Cascadia Code", "JetBrains Mono", "Fira Code", Menlo, monospace;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow: hidden;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ========== SCROLLBAR ========== */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+  /* ========== TOP BAR ========== */
+  .topbar {
+    height: 48px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: relative;
+    z-index: 100;
+  }
+
+  .topbar::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-blue-dim), transparent);
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .logo-icon {
+    width: 22px;
+    height: 22px;
+    position: relative;
+  }
+
+  .logo-icon svg { width: 100%; height: 100%; }
+
+  .logo-text {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+  }
+
+  .logo-version {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    margin-left: -4px;
+    margin-top: 2px;
+  }
+
+  .topbar-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border-default);
+  }
+
+  .topbar-breadcrumb {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .topbar-breadcrumb span { color: var(--text-tertiary); }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 100px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: 0 0 6px var(--accent-green);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent-green); }
+    50% { opacity: 0.6; box-shadow: 0 0 10px var(--accent-green); }
+  }
+
+  .topbar-time {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-tertiary);
+  }
+
+  /* ========== LAYOUT ========== */
+  .app-layout {
+    display: flex;
+    height: calc(100vh - 48px);
+  }
+
+  /* ========== SIDEBAR ========== */
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+  }
+
+  .sidebar-section {
+    padding: 0 10px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-tertiary);
+    padding: 8px 10px 6px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    position: relative;
+  }
+
+  .sidebar-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .sidebar-item.active {
+    background: var(--accent-blue-glow);
+    color: var(--accent-blue-bright);
+  }
+
+  .sidebar-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 16px;
+    background: var(--accent-blue);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .sidebar-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.65;
+    flex-shrink: 0;
+  }
+
+  .sidebar-item.active .sidebar-icon { opacity: 1; }
+
+  .sidebar-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    padding: 1px 6px;
+    border-radius: 100px;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .sidebar-item.active .sidebar-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--accent-blue-bright);
+  }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 10px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: var(--radius-md);
+  }
+
+  .sidebar-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue-dim), var(--accent-purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .sidebar-profile-info { flex: 1; min-width: 0; }
+  .sidebar-profile-name { font-size: 11.5px; font-weight: 500; color: var(--text-primary); }
+  .sidebar-profile-role { font-size: 10px; color: var(--text-tertiary); }
+
+  /* ========== MAIN CONTENT ========== */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--bg-base);
+  }
+
+  /* ========== CARD ========== */
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .card-title-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-tertiary);
+  }
+
+  .card-subtitle {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+  }
+
+  .card-body { padding: 16px; }
+
+  .card-badge {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .badge-blue { background: rgba(59, 130, 246, 0.12); color: var(--accent-blue-bright); }
+  .badge-green { background: var(--accent-green-dim); color: var(--accent-green); }
+  .badge-red { background: var(--accent-red-dim); color: var(--accent-red); }
+  .badge-amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
+
+  /* ========== PIPELINE STATE MACHINE ========== */
+  .pipeline-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .pipeline-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pipeline-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .pipeline-meta-item {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pipeline-meta-item svg {
+    width: 12px;
+    height: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .state-machine {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 8px 0;
+    overflow-x: auto;
+  }
+
+  .state-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .state-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.3s;
+    background: var(--bg-elevated);
+    position: relative;
+    z-index: 2;
+  }
+
+  .state-node.completed .state-circle {
+    border-color: var(--accent-green);
+    background: var(--accent-green-dim);
+    color: var(--accent-green);
+  }
+
+  .state-node.active .state-circle {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-glow);
+    color: var(--accent-blue-bright);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.3), 0 0 32px rgba(59, 130, 246, 0.1);
+    animation: state-pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes state-pulse {
+    0%, 100% { box-shadow: 0 0 16px rgba(59, 130, 246, 0.3), 0 0 32px rgba(59, 130, 246, 0.1); }
+    50% { box-shadow: 0 0 24px rgba(59, 130, 246, 0.5), 0 0 48px rgba(59, 130, 246, 0.15); }
+  }
+
+  .state-node.pending .state-circle {
+    border-color: var(--border-default);
+    color: var(--text-tertiary);
+  }
+
+  .state-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+
+  .state-node.active .state-label { color: var(--accent-blue-bright); font-weight: 500; }
+  .state-node.completed .state-label { color: var(--accent-green); }
+
+  .state-connector {
+    width: 40px;
+    height: 2px;
+    background: var(--border-default);
+    flex-shrink: 0;
+    position: relative;
+    top: -10px;
+  }
+
+  .state-connector.completed { background: var(--accent-green); opacity: 0.5; }
+  .state-connector.active {
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+    opacity: 0.7;
+  }
+
+  /* ========== AGENT CARDS ========== */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .agent-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+  }
+
+  .agent-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .agent-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .agent-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-default);
+  }
+
+  .agent-name { font-size: 13px; font-weight: 600; }
+  .agent-model {
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    color: var(--text-tertiary);
+  }
+
+  .agent-status-badge {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+  }
+
+  .agent-status-executing {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--accent-blue-bright);
+    animation: status-blink 2s ease-in-out infinite;
+  }
+
+  @keyframes status-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .agent-status-waiting {
+    background: var(--bg-hover);
+    color: var(--text-tertiary);
+  }
+
+  .agent-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .agent-stat {
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+  }
+
+  .agent-stat-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .agent-stat-value {
+    font-size: 16px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  .agent-permissions {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .perm-badge {
+    font-size: 9.5px;
+    font-family: var(--font-mono);
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+
+  .agent-output {
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-height: 60px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .agent-output::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: linear-gradient(transparent, var(--bg-base));
+  }
+
+  .tier-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .tier-badge {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .tier-matched { background: var(--accent-green-dim); color: var(--accent-green); }
+  .tier-label { font-size: 10px; color: var(--text-tertiary); }
+
+  /* ========== BOTTOM GRID ========== */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* ========== NEGOTIATION PANEL ========== */
+  .nego-round {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .nego-round-label {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .consensus-bar-wrap {
+    margin-bottom: 14px;
+  }
+
+  .consensus-bar-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .consensus-bar-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .consensus-bar-value {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--accent-blue-bright);
+  }
+
+  .consensus-bar {
+    height: 4px;
+    background: var(--bg-hover);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .consensus-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue-dim), var(--accent-blue));
+    border-radius: 2px;
+    transition: width 1.5s ease-out;
+  }
+
+  .nego-transcript {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nego-msg {
+    display: flex;
+    gap: 8px;
+    animation: fade-slide-in 0.4s ease-out;
+  }
+
+  @keyframes fade-slide-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .nego-msg-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .nego-msg-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nego-msg-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  .nego-msg-name { font-size: 10.5px; font-weight: 600; }
+  .nego-msg-time { font-size: 9.5px; font-family: var(--font-mono); color: var(--text-tertiary); }
+
+  .nego-msg-text {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ========== AUDIT CHAIN ========== */
+  .audit-chain-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    background: var(--accent-green-dim);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(34, 197, 94, 0.15);
+  }
+
+  .audit-chain-status-text {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--accent-green);
+    font-weight: 500;
+  }
+
+  .audit-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .audit-entry {
+    display: grid;
+    grid-template-columns: 30px 90px 1fr 60px 14px;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    transition: background 0.15s;
+  }
+
+  .audit-entry:hover { background: var(--bg-hover); }
+
+  .audit-entry-idx {
+    color: var(--text-tertiary);
+    text-align: right;
+    font-size: 10px;
+  }
+
+  .audit-entry-hash {
+    color: var(--accent-purple);
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
+  .audit-entry-action { color: var(--text-secondary); font-size: 11px; }
+  .audit-entry-time { color: var(--text-tertiary); font-size: 10px; text-align: right; }
+
+  .audit-entry-check { font-size: 11px; text-align: center; }
+  .check-ok { color: var(--accent-green); }
+  .check-fail { color: var(--accent-red); }
+
+  .audit-entry.highlight-entry {
+    animation: audit-highlight 0.6s ease-out;
+  }
+
+  @keyframes audit-highlight {
+    0% { background: var(--accent-blue-glow); }
+    100% { background: transparent; }
+  }
+
+  /* ========== GUARD PANEL ========== */
+  .guard-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .guard-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--accent-amber-dim);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .guard-name { font-size: 13px; font-weight: 600; }
+  .guard-subtitle { font-size: 10.5px; color: var(--text-tertiary); }
+
+  .guard-active-badge {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    color: var(--accent-green);
+    font-weight: 500;
+  }
+
+  .guard-active-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  .guard-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .guard-stat {
+    text-align: center;
+    padding: 8px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+  }
+
+  .guard-stat-num {
+    font-size: 18px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .guard-stat-label {
+    font-size: 9.5px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .guard-log {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .guard-log-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+
+  .guard-log-entry.blocked {
+    background: var(--accent-red-dim);
+    animation: flash-red 0.5s ease-out;
+  }
+
+  @keyframes flash-red {
+    0% { background: rgba(239, 68, 68, 0.3); }
+    100% { background: var(--accent-red-dim); }
+  }
+
+  .guard-log-entry.allowed { background: var(--bg-elevated); }
+
+  .guard-log-icon { font-size: 10px; flex-shrink: 0; }
+  .guard-log-text { color: var(--text-secondary); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .guard-log-time { color: var(--text-tertiary); font-size: 9.5px; flex-shrink: 0; }
+
+  /* ========== COUNT-UP ANIM ========== */
+  .count-up {
+    display: inline-block;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 1100px) {
+    .bottom-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ========== SUBTLE NOISE OVERLAY ========== */
+  .main::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.015;
+    z-index: 1000;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== TOP BAR ========== -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#3b82f6"/>
+          <path d="M2 17l10 5 10-5" stroke="#3b82f6" opacity="0.4"/>
+          <path d="M2 12l10 5 10-5" stroke="#3b82f6" opacity="0.7"/>
+        </svg>
+      </div>
+      <span class="logo-text">HyperChain</span>
+      <span class="logo-version">v0.4.0</span>
+    </div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-breadcrumb">
+      <span>Governance</span> / Pipelines / code-review-auth
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span style="color: var(--accent-green);">3</span>
+      <span style="color: var(--text-secondary);">active pipelines</span>
+    </div>
+    <div class="status-pill">
+      <span style="color: var(--text-tertiary);">ECC</span>
+      <span style="color: var(--accent-green);">intact</span>
+    </div>
+    <div class="topbar-time" id="topbar-clock">2026-03-29 14:32:07 UTC</div>
+  </div>
+</div>
+
+<!-- ========== APP LAYOUT ========== -->
+<div class="app-layout">
+
+  <!-- ========== SIDEBAR ========== -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Operations</div>
+      <div class="sidebar-item active">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 8h3l2-4 2 8 2-4h3"/></svg>
+        Pipelines
+        <span class="sidebar-badge">3</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        Agents
+        <span class="sidebar-badge">7</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v12M4 6l4-4 4 4"/></svg>
+        Negotiations
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Security</div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4h12M2 8h12M2 12h12"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/><circle cx="6" cy="8" r="1.5" fill="currentColor"/><circle cx="10" cy="12" r="1.5" fill="currentColor"/></svg>
+        Audit Chain
+        <span class="sidebar-badge">142</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.5l5.5 3v4c0 3.5-2.5 5.5-5.5 7-3-1.5-5.5-3.5-5.5-7v-4L8 1.5z"/></svg>
+        Guards
+        <span class="sidebar-badge">2</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="10" height="8" rx="1.5"/><path d="M5 5V3.5a3 3 0 016 0V5"/></svg>
+        Tier Policies
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"/></svg>
+        Settings
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2h10v12H3z"/><path d="M6 5h4M6 7.5h4M6 10h2"/></svg>
+        Logs
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">CC</div>
+        <div class="sidebar-profile-info">
+          <div class="sidebar-profile-name">Chairman</div>
+          <div class="sidebar-profile-role">admin</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== MAIN ========== -->
+  <main class="main">
+
+    <!-- PIPELINE STATE MACHINE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg class="card-title-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 8h3l2-4 2 8 2-4h3"/></svg>
+          Pipeline Execution
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="card-badge badge-blue">REVIEWING</span>
+          <span class="card-subtitle">run_2026032914</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="pipeline-header-row">
+          <div class="pipeline-name">
+            <span style="color:var(--accent-blue);">code-review-auth</span>
+            <span style="font-size:11px;color:var(--text-tertiary);font-weight:400;">Authentication service refactor</span>
+          </div>
+          <div class="pipeline-meta">
+            <div class="pipeline-meta-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h10M3 8h6M3 11h8"/></svg>
+              Step 5 of 8
+            </div>
+            <div class="pipeline-meta-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/><path d="M8 4.5V8l2.5 1.5"/></svg>
+              <span id="pipeline-timer">2m 34s</span>
+            </div>
+            <div class="pipeline-meta-item">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l-6 8-3-3"/></svg>
+              4 / 8 complete
+            </div>
+          </div>
+        </div>
+
+        <div class="state-machine" id="state-machine">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENT CARDS -->
+    <div class="agents-grid">
+      <!-- Writer Agent -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-identity">
+            <div class="agent-icon" style="background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2);">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#3b82f6" stroke-width="1.4"><path d="M3 13l1.5-5L11 2l2 2-6.5 6.5L3 13z"/><path d="M9 4l2 2"/></svg>
+            </div>
+            <div>
+              <div class="agent-name">Writer Agent</div>
+              <div class="agent-model">claude-opus-4-6</div>
+            </div>
+          </div>
+          <div class="agent-status-badge agent-status-executing">EXECUTING</div>
+        </div>
+        <div class="tier-row">
+          <span class="tier-badge tier-matched">TIER 5</span>
+          <span class="tier-label">Max autonomy &middot; Matched</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#22c55e" stroke-width="1.2"/><path d="M3.5 6l2 2 3-3.5" stroke="#22c55e" stroke-width="1.2"/></svg>
+        </div>
+        <div class="agent-stats">
+          <div class="agent-stat">
+            <div class="agent-stat-label">Confidence</div>
+            <div class="agent-stat-value" style="color:var(--accent-blue-bright);"><span class="count-up" data-target="78">0</span>%</div>
+          </div>
+          <div class="agent-stat">
+            <div class="agent-stat-label">Tokens</div>
+            <div class="agent-stat-value"><span class="count-up" data-target="14832">0</span></div>
+          </div>
+        </div>
+        <div class="agent-permissions">
+          <span class="perm-badge">file:write</span>
+          <span class="perm-badge">git:commit</span>
+          <span class="perm-badge">shell:exec</span>
+          <span class="perm-badge">net:fetch</span>
+        </div>
+        <div class="agent-output">Refactored OAuth2 token validation middleware. Replaced manual JWT parsing with jose library. Added refresh token rotation with 7-day absolute expiry. Updated PKCE challenge generation to use S256...</div>
+      </div>
+
+      <!-- Reviewer Agent -->
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-identity">
+            <div class="agent-icon" style="background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.2);">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#a78bfa" stroke-width="1.4"><circle cx="7" cy="7" r="4"/><path d="M10 10l3.5 3.5"/></svg>
+            </div>
+            <div>
+              <div class="agent-name">Reviewer Agent</div>
+              <div class="agent-model">gpt-5.4-turbo</div>
+            </div>
+          </div>
+          <div class="agent-status-badge agent-status-waiting">WAITING</div>
+        </div>
+        <div class="tier-row">
+          <span class="tier-badge tier-matched">TIER 5</span>
+          <span class="tier-label">Max autonomy &middot; Matched</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#22c55e" stroke-width="1.2"/><path d="M3.5 6l2 2 3-3.5" stroke="#22c55e" stroke-width="1.2"/></svg>
+        </div>
+        <div class="agent-stats">
+          <div class="agent-stat">
+            <div class="agent-stat-label">Confidence</div>
+            <div class="agent-stat-value" style="color:var(--accent-purple);"><span class="count-up" data-target="85">0</span>%</div>
+          </div>
+          <div class="agent-stat">
+            <div class="agent-stat-label">Reviews</div>
+            <div class="agent-stat-value"><span class="count-up" data-target="247">0</span></div>
+          </div>
+        </div>
+        <div class="agent-permissions">
+          <span class="perm-badge">file:read</span>
+          <span class="perm-badge">git:diff</span>
+          <span class="perm-badge">comment:write</span>
+        </div>
+        <div class="agent-output">Queued for review. Will analyze: token rotation logic, PKCE implementation, middleware chain ordering, error response format consistency...</div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID: NEGOTIATION + AUDIT CHAIN + GUARD -->
+    <div class="bottom-grid">
+
+      <!-- Negotiation Panel -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3h8v6H5l-3 2V3z"/><path d="M6 9h8v6l-3-2H6V9z"/></svg>
+            Negotiation
+          </div>
+          <span class="card-badge badge-amber">ROUND 2/5</span>
+        </div>
+        <div class="card-body">
+          <div class="consensus-bar-wrap">
+            <div class="consensus-bar-header">
+              <span class="consensus-bar-label">Consensus</span>
+              <span class="consensus-bar-value"><span class="count-up" data-target="73">0</span>%</span>
+            </div>
+            <div class="consensus-bar">
+              <div class="consensus-bar-fill" id="consensus-fill" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="nego-transcript">
+            <div class="nego-msg">
+              <div class="nego-msg-avatar" style="background:rgba(59,130,246,0.12);color:#60a5fa;">W</div>
+              <div class="nego-msg-body">
+                <div class="nego-msg-header">
+                  <span class="nego-msg-name" style="color:var(--accent-blue-bright);">Writer</span>
+                  <span class="nego-msg-time">14:31:42</span>
+                </div>
+                <div class="nego-msg-text">Proposing refresh token rotation with 7d absolute + 24h sliding window. PKCE S256 mandatory for all public clients.</div>
+              </div>
+            </div>
+            <div class="nego-msg">
+              <div class="nego-msg-avatar" style="background:rgba(167,139,250,0.12);color:#a78bfa;">R</div>
+              <div class="nego-msg-body">
+                <div class="nego-msg-header">
+                  <span class="nego-msg-name" style="color:var(--accent-purple);">Reviewer</span>
+                  <span class="nego-msg-time">14:31:58</span>
+                </div>
+                <div class="nego-msg-text">Agree on PKCE. Concern: 7d absolute may be too long for banking-grade. Suggest configurable per-client with 72h default.</div>
+              </div>
+            </div>
+            <div class="nego-msg">
+              <div class="nego-msg-avatar" style="background:rgba(59,130,246,0.12);color:#60a5fa;">W</div>
+              <div class="nego-msg-body">
+                <div class="nego-msg-header">
+                  <span class="nego-msg-name" style="color:var(--accent-blue-bright);">Writer</span>
+                  <span class="nego-msg-time">14:32:05</span>
+                </div>
+                <div class="nego-msg-text">Accepted. Adding client_token_ttl to OAuth config schema. Defaulting 72h with max 168h cap.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audit Chain -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4h12M2 8h12M2 12h12"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>
+            ECC Audit Chain
+          </div>
+          <span class="card-subtitle">142 entries</span>
+        </div>
+        <div class="card-body" style="padding-top:10px;">
+          <div class="audit-chain-status">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#22c55e" stroke-width="1.2"/><path d="M4 7l2.5 2.5L10 5" stroke="#22c55e" stroke-width="1.3"/></svg>
+            <span class="audit-chain-status-text">Chain Integrity Verified &middot; 142/142 valid</span>
+          </div>
+          <div class="audit-entries" id="audit-entries">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Guard Panel -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.5l5.5 3v4c0 3.5-2.5 5.5-5.5 7-3-1.5-5.5-3.5-5.5-7v-4L8 1.5z"/></svg>
+            XiaotianQuan
+          </div>
+          <div class="guard-active-badge">
+            <span class="guard-active-dot"></span>
+            Active
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="guard-header-row">
+            <div class="guard-icon-wrap">&#128021;</div>
+            <div>
+              <div class="guard-name">Runtime Guard</div>
+              <div class="guard-subtitle">Pre-tool hook enforcement</div>
+            </div>
+          </div>
+          <div class="guard-stats">
+            <div class="guard-stat">
+              <div class="guard-stat-num" style="color:var(--accent-red);"><span class="count-up" data-target="3">0</span></div>
+              <div class="guard-stat-label">Blocked</div>
+            </div>
+            <div class="guard-stat">
+              <div class="guard-stat-num" style="color:var(--accent-green);"><span class="count-up" data-target="847">0</span></div>
+              <div class="guard-stat-label">Allowed</div>
+            </div>
+            <div class="guard-stat">
+              <div class="guard-stat-num" style="color:var(--text-secondary);"><span class="count-up" data-target="850">0</span></div>
+              <div class="guard-stat-label">Total</div>
+            </div>
+          </div>
+          <div class="guard-log" id="guard-log">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /bottom-grid -->
+  </main>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ========== CLOCK ==========
+  function updateClock() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('topbar-clock').textContent =
+      `${now.getUTCFullYear()}-${pad(now.getUTCMonth()+1)}-${pad(now.getUTCDate())} ${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())} UTC`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ========== PIPELINE TIMER ==========
+  let timerSec = 154;
+  function updateTimer() {
+    timerSec++;
+    const m = Math.floor(timerSec / 60);
+    const s = timerSec % 60;
+    document.getElementById('pipeline-timer').textContent = `${m}m ${String(s).padStart(2,'0')}s`;
+  }
+  setInterval(updateTimer, 1000);
+
+  // ========== STATE MACHINE ==========
+  const states = [
+    { id: 'proposed', label: 'Proposed', icon: '1' },
+    { id: 'negotiating', label: 'Negotiating', icon: '2' },
+    { id: 'assigned', label: 'Assigned', icon: '3' },
+    { id: 'executing', label: 'Executing', icon: '4' },
+    { id: 'reviewing', label: 'Reviewing', icon: '5' },
+    { id: 'delivered', label: 'Delivered', icon: '6' },
+    { id: 'verified', label: 'Verified', icon: '7' },
+    { id: 'completed', label: 'Completed', icon: '8' },
+  ];
+  const activeIdx = 4; // "reviewing"
+
+  const smEl = document.getElementById('state-machine');
+  states.forEach((s, i) => {
+    const cls = i < activeIdx ? 'completed' : (i === activeIdx ? 'active' : 'pending');
+    const checkSvg = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 7l2.5 2.5L10.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const node = document.createElement('div');
+    node.className = `state-node ${cls}`;
+    node.innerHTML = `
+      <div class="state-circle">${cls === 'completed' ? checkSvg : s.icon}</div>
+      <div class="state-label">${s.label}</div>
+    `;
+    smEl.appendChild(node);
+
+    if (i < states.length - 1) {
+      const conn = document.createElement('div');
+      const connCls = i < activeIdx - 1 ? 'completed' : (i === activeIdx - 1 ? 'active' : '');
+      conn.className = `state-connector ${connCls}`;
+      smEl.appendChild(conn);
+    }
+  });
+
+  // ========== AUDIT CHAIN ==========
+  const auditData = [
+    { idx: 142, hash: 'a3f8c1d2', actor: 'writer', action: 'code_submitted', time: '14:32:05', ok: true },
+    { idx: 141, hash: 'e7b2f490', actor: 'guardian', action: 'shell_exec_allowed', time: '14:31:58', ok: true },
+    { idx: 140, hash: '9c1e3a7b', actor: 'reviewer', action: 'review_queued', time: '14:31:42', ok: true },
+    { idx: 139, hash: 'f5d80c26', actor: 'writer', action: 'negotiation_accepted', time: '14:31:12', ok: true },
+    { idx: 138, hash: '82a4e1f9', actor: 'reviewer', action: 'counter_proposal', time: '14:30:58', ok: true },
+    { idx: 137, hash: 'b6c93d15', actor: 'writer', action: 'proposal_submitted', time: '14:30:30', ok: true },
+    { idx: 136, hash: '1f7e4a82', actor: 'system', action: 'pipeline_state_change', time: '14:30:28', ok: true },
+    { idx: 135, hash: 'd4a286c0', actor: 'guardian', action: 'git_reset_blocked', time: '14:29:55', ok: true },
+    { idx: 134, hash: '5e93b17d', actor: 'system', action: 'agent_assigned', time: '14:29:40', ok: true },
+    { idx: 133, hash: '7a0fc8e3', actor: 'chairman', action: 'pipeline_initiated', time: '14:29:12', ok: true },
+  ];
+
+  const auditEl = document.getElementById('audit-entries');
+  auditData.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'audit-entry';
+    row.style.animationDelay = `${i * 0.05}s`;
+    row.innerHTML = `
+      <span class="audit-entry-idx">#${e.idx}</span>
+      <span class="audit-entry-hash">${e.hash}</span>
+      <span class="audit-entry-action">${e.actor}<span style="color:var(--text-tertiary);">:</span>${e.action}</span>
+      <span class="audit-entry-time">${e.time}</span>
+      <span class="audit-entry-check ${e.ok ? 'check-ok' : 'check-fail'}">${e.ok ? '\u2713' : '\u2717'}</span>
+    `;
+    auditEl.appendChild(row);
+  });
+
+  // ========== GUARD LOG ==========
+  const guardData = [
+    { blocked: true, text: 'git reset --hard HEAD~3', time: '14:29:55' },
+    { blocked: false, text: 'git commit -m "refactor: OAuth2 middleware"', time: '14:31:02' },
+    { blocked: true, text: 'rm -rf /opt/hyperchain/data/', time: '14:28:17' },
+    { blocked: false, text: 'npm test -- --coverage', time: '14:31:45' },
+    { blocked: true, text: 'git push --force origin main', time: '14:27:33' },
+    { blocked: false, text: 'curl -s https://api.oauth.test/health', time: '14:32:01' },
+  ];
+
+  const guardEl = document.getElementById('guard-log');
+  guardData.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = `guard-log-entry ${e.blocked ? 'blocked' : 'allowed'}`;
+    row.style.animationDelay = `${i * 0.08}s`;
+    row.innerHTML = `
+      <span class="guard-log-icon">${e.blocked ? '\u26d4' : '\u2705'}</span>
+      <span class="guard-log-text">${escapeHtml(e.text)}</span>
+      <span class="guard-log-time">${e.time}</span>
+    `;
+    guardEl.appendChild(row);
+  });
+
+  function escapeHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // ========== COUNT-UP ANIMATION ==========
+  function animateCountUp() {
+    document.querySelectorAll('.count-up').forEach(el => {
+      const target = parseInt(el.dataset.target, 10);
+      const duration = 1200;
+      const start = performance.now();
+      function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(target * eased);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  // ========== CONSENSUS BAR ANIMATION ==========
+  function animateConsensus() {
+    setTimeout(() => {
+      document.getElementById('consensus-fill').style.width = '73%';
+    }, 300);
+  }
+
+  // ========== INIT ==========
+  setTimeout(() => {
+    animateCountUp();
+    animateConsensus();
+  }, 200);
+
+})();
+</script>
+</body>
+</html>
