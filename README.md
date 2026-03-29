@@ -28,7 +28,7 @@
 
 ## The Story
 
-In early 2026, a team in China attempted something that most enterprises only theorize about: run an entire company — software engineering, financial intelligence, quantitative trading, and corporate governance — with **nothing but AI models as the workforce**. No human engineers. No human analysts. One human chairman. Everything else was AI.
+In the second half of 2025, a team in China attempted something that most enterprises only theorize about: run an entire company — software engineering, financial intelligence, quantitative trading, and corporate governance — with **nothing but AI models as the workforce**. No human engineers. No human analysts. One human chairman. Everything else was AI.
 
 They deployed **every frontier model money could buy.** Claude, GPT, Gemini, Grok, Codex, Llama, DeepSeek, GLM — at peak, eleven different models from eight providers held positions ranging from code architect to board director. The operation spanned 8 datacenters across 5 cities, governed thousands of GPU servers worth nine figures in hardware, and generated millions of AI-to-AI interactions. The monthly token consumption alone would have cost **$3-5 million at retail API pricing** — a burn rate that made the team realize, very quickly, that ungoverned AI doesn't just produce bad code. It produces bad code *expensively.*
 
