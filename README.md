@@ -17,11 +17,11 @@
 </p>
 
 <p align="center">
+  <a href="https://chaoshpc.com"><strong>🌐 Official Website</strong></a> •
+  <a href="https://chaoshpc.com/demo"><strong>🖥️ Live Dashboard Demo</strong></a> •
   <a href="#quick-start">Quick Start</a> •
-  <a href="#why-hyperchain">Why HyperChain</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#anti-patterns">Anti-Patterns</a> •
-  <a href="docs/anti-patterns.md">Full Guide</a>
+  <a href="docs/anti-patterns.md">Anti-Patterns Guide</a>
 </p>
 
 ---
