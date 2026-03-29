@@ -1,11 +1,16 @@
 <p align="center">
-  <img src="assets/logo.jpg" alt="HyperChain — Beyond Limit" width="280"/>
+  <img src="assets/banner.png" alt="HyperChain — Enterprise Multi-AI Governance Framework" width="100%"/>
+</p>
+
+<p align="center">
+  <img src="assets/logo.jpg" alt="HyperChain" width="100"/>
 </p>
 
 <h1 align="center">HyperChain 国兴超链</h1>
 
 <p align="center">
-  <strong>The governance layer your multi-AI system is missing.</strong>
+  <strong>The governance layer your multi-AI system is missing.</strong><br/>
+  <sub>Forged in production. 83 tests. 7 anti-patterns. $5M worth of lessons. Yours for free.</sub>
 </p>
 
 <p align="center">
